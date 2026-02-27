@@ -1835,8 +1835,8 @@ void optimize_lidar_odometry(
     chunk_AtPB.resize(num_chunks);
     for (size_t c = 0; c < num_chunks; ++c)
     {
-        chunk_AtPA[c].assign(num_poses, Mat6x6::Zero());
-        chunk_AtPB[c].assign(num_poses, Vec6x1::Zero());
+        chunk_AtPA[c].resize(num_poses);
+        chunk_AtPB[c].resize(num_poses);
     }
     tbb::combinable<LookupStats> thread_local_stats;
     UTL_PROFILER_END(hessian_alloc);
@@ -1849,6 +1849,12 @@ void optimize_lidar_odometry(
         const size_t begin = chunk * chunk_size;
         const size_t end = std::min(begin + chunk_size, num_points);
         auto& stats = thread_local_stats.local();
+
+        for (size_t p = 0; p < num_poses; ++p)
+        {
+            chunk_AtPA[chunk][p].setZero();
+            chunk_AtPB[chunk][p].setZero();
+        }
 
         for (size_t i = begin; i < end; ++i)
         {
