@@ -3,9 +3,8 @@
 #include <hash_utils.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/stopwatch.h>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
 #include <tbb/combinable.h>
+#include <tbb/parallel_for.h>
 #include <thread>
 
 #include <export_laz.h>
@@ -1693,10 +1692,10 @@ static void compute_hessian(
     // Indoor contribution
     const auto indoor_key = get_rgd_index_3d(point_global, bucket_size_indoor);
     const auto indoor_it = buckets_indoor.find(indoor_key);
+    ++stats.indoor_lookups;
 
     if (indoor_it != buckets_indoor.end())
     {
-        ++stats.indoor_lookups;
         add_indoor_hessian_contribution(
             indoor_it->second,
             point_source,
@@ -1731,10 +1730,10 @@ static void compute_hessian(
     {
         const auto outdoor_key = get_rgd_index_3d(point_global, bucket_size_outdoor);
         const auto outdoor_it = buckets_outdoor.find(outdoor_key);
+        ++stats.outdoor_lookups;
 
         if (outdoor_it != buckets_outdoor.end())
         {
-            ++stats.outdoor_lookups;
             add_outdoor_hessian_contribution(
                 outdoor_it->second,
                 point_source,
